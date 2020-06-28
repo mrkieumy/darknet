@@ -12,13 +12,7 @@ This repository forked from a great work of https://github.com/AlexeyAB/darknet
 [![DOI](https://zenodo.org/badge/75388965.svg)](https://zenodo.org/badge/latestdoi/75388965)
 [![arxiv.org](http://img.shields.io/badge/cs.CV-arXiv%3A2004.10934-B31B1B.svg)](https://arxiv.org/abs/2004.10934)
 
-* [YOLOv4 model zoo](https://github.com/AlexeyAB/darknet/wiki/YOLOv4-model-zoo)
 * [Requirements (and how to install dependecies)](#requirements)
-* [Pre-trained models](#pre-trained-models)
-* [FAQ - frequently asked questions](https://github.com/AlexeyAB/darknet/wiki/FAQ---frequently-asked-questions)
-* [Explanations in issues](https://github.com/AlexeyAB/darknet/issues?q=is%3Aopen+is%3Aissue+label%3AExplanations)
-* [Yolo v4 in other frameworks (TensorRT, TensorFlow, PyTorch, OpenVINO, OpenCV-dnn, TVM,...)](#yolo-v4-in-other-frameworks)
-* [Datasets](#datasets)
 
 0.  [Customize this repository instruction for KAIST dataset](#improvements-in-this-repository)
 1.  [How to use](#how-to-use-on-the-command-line)
