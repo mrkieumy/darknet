@@ -14,7 +14,6 @@ This repository forked from a great work of https://github.com/AlexeyAB/darknet
 
 * [Requirements (and how to install dependecies)](#requirements)
 
-0.  [Customize this repository instruction for KAIST dataset](#improvements-in-this-repository)
 1.  [How to use](#how-to-use-on-the-command-line)
 2.  How to compile on Linux
     * [Using cmake](#how-to-compile-on-linux-using-cmake)
@@ -25,7 +24,7 @@ This repository forked from a great work of https://github.com/AlexeyAB/darknet
     * [Legacy way](#how-to-compile-on-windows-legacy-way)
 4.  [Training and Evaluation of speed and accuracy on MS COCO](https://github.com/AlexeyAB/darknet/wiki#training-and-evaluation-of-speed-and-accuracy-on-ms-coco)
 5.  [How to train with multi-GPU:](#how-to-train-with-multi-gpu)
-6.  [How to train (to detect your custom objects)](#how-to-train-to-detect-your-custom-objects)
+6.  [How to train (to detect your custom objects), KAIST dataset for pedestrian detection with Yolov3](#how-to-train-to-detect-your-custom-objects)
 7.  [How to train tiny-yolo (to detect your custom objects)](#how-to-train-tiny-yolo-to-detect-your-custom-objects)
 8.  [When should I stop training](#when-should-i-stop-training)
 9.  [How to improve object detection](#how-to-improve-object-detection)
@@ -54,24 +53,24 @@ Others: https://www.youtube.com/user/pjreddie/videos
 
 #### How to use on the command line
 
-On Linux use `./darknet` instead of `darknet.exe`, like this:`./darknet detector test ./cfg/coco.data ./cfg/yolov4.cfg ./yolov4.weights`
+On Linux use `./darknet`, on Windows use `darknet.exe`
+example: `./darknet detector test ./cfg/coco.data ./cfg/yolov4.cfg ./yolov4.weights`
 
 On Linux find executable file `./darknet` in the root directory, while on Windows find it in the directory `\build\darknet\x64` 
 
-* Yolo v4 COCO - **image**: `darknet.exe detector test cfg/coco.data cfg/yolov4.cfg yolov4.weights -thresh 0.25`
-* **Output coordinates** of objects: `darknet.exe detector test cfg/coco.data yolov4.cfg yolov4.weights -ext_output dog.jpg`
-* Yolo v4 COCO - **video**: `darknet.exe detector demo cfg/coco.data cfg/yolov4.cfg yolov4.weights -ext_output test.mp4`
-* Yolo v4 COCO - **WebCam 0**: `darknet.exe detector demo cfg/coco.data cfg/yolov4.cfg yolov4.weights -c 0`
-* Yolo v4 COCO for **net-videocam** - Smart WebCam: `darknet.exe detector demo cfg/coco.data cfg/yolov4.cfg yolov4.weights http://192.168.0.80:8080/video?dummy=param.mjpg`
-* Yolo v4 - **save result videofile res.avi**: `darknet.exe detector demo cfg/coco.data cfg/yolov4.cfg yolov4.weights test.mp4 -out_filename res.avi`
-* Yolo v3 **Tiny** COCO - video: `darknet.exe detector demo cfg/coco.data cfg/yolov3-tiny.cfg yolov3-tiny.weights test.mp4`
+Some example test on Yolo v4 with COCO weight:
+* Test **image**: `./darknet detector test cfg/coco.data cfg/yolov4.cfg yolov4.weights`
+* **Output coordinates** of objects: `./darknet detector test cfg/coco.data yolov4.cfg yolov4.weights -ext_output dog.jpg`
+* Test **video**: `./darknet detector demo cfg/coco.data cfg/yolov4.cfg yolov4.weights -ext_output test.mp4`
+* Test on **WebCam 0**: `./darknet detector demo cfg/coco.data cfg/yolov4.cfg yolov4.weights -c 0`
+* Smart WebCam **net-videocam**: `./darknet detector demo cfg/coco.data cfg/yolov4.cfg yolov4.weights http://192.168.0.80:8080/video?dummy=param.mjpg`
+* Yolo v4 - **save result videofile res.avi**: `./darknet detector demo cfg/coco.data cfg/yolov4.cfg yolov4.weights test.mp4 -out_filename res.avi`
+* Yolo v3 **KAIST** video: `./darknet detector demo data/kaist.data cfg/yolov3-kaist.cfg yolov3-kaist.weights test_video.mp4`
 * **JSON and MJPEG server** that allows multiple connections from your soft or Web-browser `ip-address:8070` and 8090: `./darknet detector demo ./cfg/coco.data ./cfg/yolov3.cfg ./yolov3.weights test50.mp4 -json_port 8070 -mjpeg_port 8090 -ext_output`
-* Yolo v3 Tiny **on GPU #1**: `darknet.exe detector demo cfg/coco.data cfg/yolov3-tiny.cfg yolov3-tiny.weights -i 1 test.mp4`
-* Alternative method Yolo v3 COCO - image: `darknet.exe detect cfg/yolov4.cfg yolov4.weights -i 0 -thresh 0.25`
-* Train on **Amazon EC2**, to see mAP & Loss-chart using URL like: `http://ec2-35-160-228-91.us-west-2.compute.amazonaws.com:8090` in the Chrome/Firefox (**Darknet should be compiled with OpenCV**): 
-    `./darknet detector train cfg/coco.data yolov4.cfg yolov4.conv.137 -dont_show -mjpeg_port 8090 -map`
-* 186 MB Yolo9000 - image: `darknet.exe detector test cfg/combine9k.data cfg/yolo9000.cfg yolo9000.weights`
-* Remeber to put data/9k.tree and data/coco9k.map under the same folder of your app if you use the cpp api to build an app
+* Yolo v3 Tiny **on GPU #1**: `./darknet detector demo cfg/coco.data cfg/yolov3-tiny.cfg yolov3-tiny.weights -i 1 test.mp4`
+* Alternative method Yolo v3 COCO - image: `./darknet detect cfg/yolov4.cfg yolov4.weights -i 0 -thresh 0.25`
+* Train on **KAIST dataset** with pretrained yolov3-kaist-detector: 
+    `./darknet detector train data/kaist.data cfg/yolov3-kaist.cfg weights/kaist-visible-detector.weights -dont_show`
 * To process a list of images `data/train.txt` and save results of detection to `result.json` file use: 
     `darknet.exe detector test cfg/coco.data cfg/yolov4.cfg yolov4.weights -ext_output -dont_show -out result.json < data/train.txt`
 * To process a list of images `data/train.txt` and save results of detection to `result.txt` use:                             
@@ -232,65 +231,58 @@ If you get a Nan, then for some datasets better to decrease learning rate, for 4
 https://groups.google.com/d/msg/darknet/NbJqonJBTSY/Te5PfIpuCAAJ
 
 ## How to train (to detect your custom objects):
-(to train old Yolo v2 `yolov2-voc.cfg`, `yolov2-tiny-voc.cfg`, `yolo-voc.cfg`, `yolo-voc.2.0.cfg`, ... [click by the link](https://github.com/AlexeyAB/darknet/tree/47c7af1cea5bbdedf1184963355e6418cb8b1b4f#how-to-train-pascal-voc-data))
+To train with Yolo v3 on KAIST dataset, clone this github and customize as following:
 
-Training Yolo v4 (and v3):
+0. Data file `data/kaist.data`, the number of class, train on visible or thermal)
 
-0. For training `cfg/yolov4-custom.cfg` download the pre-trained weights-file (162 MB): [yolov4.conv.137](https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.conv.137) (Google drive mirror [yolov4.conv.137](https://drive.google.com/open?id=1JKF-bdIklxOOVy-2Cr5qdvjgGpmGfcbp) )
+1. Cfg file `cfg/yolov3-kaist.cfg` with some rows:
 
-1. Create file `yolo-obj.cfg` with the same content as in `yolov4-custom.cfg` (or copy `yolov4-custom.cfg` to `yolo-obj.cfg)` and:
-
-  * change line batch to [`batch=64`](https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L3)
-  * change line subdivisions to [`subdivisions=16`](https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L4)
-  * change line max_batches to (`classes*2000` but not less than number of training images, but not less than number of training images and not less than `6000`), f.e. [`max_batches=6000`](https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L20) if you train for 3 classes
-  * change line steps to 80% and 90% of max_batches, f.e. [`steps=4800,5400`](https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L22)
+  * Recommend [`batch=64`] and  subdivisions to [`subdivisions=16`], increase subdivisions to 64 based on you GPU (when CUDA error appear)
+  * change line max_batches is the maximum of batch to train: number_of_batch (for 1 epoch) = size_of_dataset/batch_size. 
+  If you start training from Yolov4.weights, the previous max_batch is 500500, if you want to train with batch_size=64 for 50 epochs (KAIST dataset size 7601).
+  We have 7601/64=119 batch for 1 epoch, 119 * 50 = 5950 batch, so you have to set max_batches = 506450 because (500500+5950).
+  * change line steps: where at that batch, learning rate will be change, f.e. [`steps=503500,504500`], this go together with line scales = .1, .1,
+  this means the lr will decrease 10 time (lr = lr*0.1) at every step.
   * set network size `width=416 height=416` or any value multiple of 32: https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L8-L9
-  * change line `classes=80` to your number of objects in each of 3 `[yolo]`-layers:
-      * https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L610
-      * https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L696
-      * https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L783
-  * change [`filters=255`] to filters=(classes + 5)x3 in the 3 `[convolutional]` before each `[yolo]` layer, keep in mind that it only has to be the last `[convolutional]` before each of the `[yolo]` layers.
-      * https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L603
-      * https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L689
-      * https://github.com/AlexeyAB/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L776
-  * when using [`[Gaussian_yolo]`](https://github.com/AlexeyAB/darknet/blob/6e5bdf1282ad6b06ed0e962c3f5be67cf63d96dc/cfg/Gaussian_yolov3_BDD.cfg#L608)  layers, change [`filters=57`] filters=(classes + 9)x3 in the 3 `[convolutional]` before each `[Gaussian_yolo]` layer
-      * https://github.com/AlexeyAB/darknet/blob/6e5bdf1282ad6b06ed0e962c3f5be67cf63d96dc/cfg/Gaussian_yolov3_BDD.cfg#L604
-      * https://github.com/AlexeyAB/darknet/blob/6e5bdf1282ad6b06ed0e962c3f5be67cf63d96dc/cfg/Gaussian_yolov3_BDD.cfg#L696
-      * https://github.com/AlexeyAB/darknet/blob/6e5bdf1282ad6b06ed0e962c3f5be67cf63d96dc/cfg/Gaussian_yolov3_BDD.cfg#L789
-      
-  So if `classes=1` then should be `filters=18`. If `classes=2` then write `filters=21`.
+  * change line `classes=1` to your number of objects in each of 3 `[yolo]`-layers (the last 3 detection layers)
+      * https://github.com/mrkieumy/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L610
+      * https://github.com/mrkieumy/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L696
+      * https://github.com/mrkieumy/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L783
+  * change [`filters=18`] to filters=(classes + 5)x3 in the 3 `[convolutional]` before each `[yolo]` layer, keep in mind that it only has to be the last `[convolutional]` before each of the `[yolo]` layers.
+      * https://github.com/mrkieumy/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L603
+      * https://github.com/mrkieumy/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L689
+      * https://github.com/mrkieumy/darknet/blob/0039fd26786ab5f71d5af725fc18b3f521e7acfd/cfg/yolov3.cfg#L776
+  
+  So if `classes=3` then should be `filters=24`. If `classes=2` then write `filters=21`.
   
   **(Do not write in the cfg-file: filters=(classes + 5)x3)**
   
   (Generally `filters` depends on the `classes`, `coords` and number of `mask`s, i.e. filters=`(classes + coords + 1)*<number of mask>`, where `mask` is indices of anchors. If `mask` is absence, then filters=`(classes + coords + 1)*num`)
 
-  So for example, for 2 objects, your file `yolo-obj.cfg` should differ from `yolov4-custom.cfg` in such lines in each of **3** [yolo]-layers:
+  So for example, for 1 object (person), your file `yolov3-kaist.cfg` should differ from `yolov3.cfg` in such lines in each of **3** [yolo]-layers:
 
   ```
   [convolutional]
-  filters=21
+  filters=18
 
   [region]
-  classes=2
+  classes=1
   ```
-
-2. Create file `obj.names` in the directory `build\darknet\x64\data\`, with objects names - each in new line
-
-3. Create file `obj.data` in the directory `build\darknet\x64\data\`, containing (where **classes = number of objects**):
+3. Check the data file `data/kaist.data` containing (where **classes = number of objects**):
 
   ```
-  classes= 2
-  train  = data/train.txt
-  valid  = data/test.txt
-  names = data/obj.names
+  classes= 1
+  train  = data/train_thermal.txt
+  valid  = data/test_thermal.txt
+  names = data/kaist_person.names
   backup = backup/
   ```
 
-4. Put image-files (.jpg) of your objects in the directory `build\darknet\x64\data\obj\`
+4. Put kaist dataset including both image-files (.jpg) and annotation file (.txt) in the same directory and edit this directory in file `test_thermal.txt` and `train_thermal.txt`
 
-5. You should label each object on images from your dataset. Use this visual GUI-software for marking bounded boxes of objects and generating annotation files for Yolo v2 & v3: https://github.com/AlexeyAB/Yolo_mark
 
-It will create `.txt`-file for each `.jpg`-image-file - in the same directory and with the same name, but with `.txt`-extension, and put to file: object number and object coordinates on this image, for each object in new line: 
+Each `.jpg`-image-file has each `.txt`-annotation-file - in the same directory and with the same name, but with `.txt`-extension, 
+and put to file: object number and object coordinates on this image, for each object in new line with format: 
 
 `<object-class> <x_center> <y_center> <width> <height>`
 
@@ -308,7 +300,7 @@ It will create `.txt`-file for each `.jpg`-image-file - in the same directory an
   1 0.420312 0.395833 0.140625 0.166667
   ```
 
-6. Create file `train.txt` in directory `build\darknet\x64\data\`, with filenames of your images, each filename in new line, with path relative to `darknet.exe`, for example containing:
+6. Create file `train_thermal.txt` in directory `data/`, with filenames of your images, each filename in new line, with path relative to `darknet.exe`, for example containing:
 
   ```
   data/obj/img1.jpg
@@ -316,20 +308,17 @@ It will create `.txt`-file for each `.jpg`-image-file - in the same directory an
   data/obj/img3.jpg
   ```
 
-7. Download pre-trained weights for the convolutional layers and put to the directory `build\darknet\x64`
-    * for `yolov4.cfg`, `yolov4-custom.cfg` (162 MB): [yolov4.conv.137](https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.conv.137) (Google drive mirror [yolov4.conv.137](https://drive.google.com/open?id=1JKF-bdIklxOOVy-2Cr5qdvjgGpmGfcbp) )
-    * for `csresnext50-panet-spp.cfg` (133 MB): [csresnext50-panet-spp.conv.112](https://drive.google.com/file/d/16yMYCLQTY_oDlCIZPfn_sab6KD3zgzGq/view?usp=sharing)
-    * for `yolov3.cfg, yolov3-spp.cfg` (154 MB): [darknet53.conv.74](https://pjreddie.com/media/files/darknet53.conv.74)
-    * for `yolov3-tiny-prn.cfg , yolov3-tiny.cfg` (6 MB): [yolov3-tiny.conv.11](https://drive.google.com/file/d/18v36esoXCh-PsOKwyP2GWrpYDptDY8Zf/view?usp=sharing)
-    * for `enet-coco.cfg (EfficientNetB0-Yolov3)` (14 MB): [enetb0-coco.conv.132](https://drive.google.com/file/d/1uhh3D6RSn0ekgmsaTcl-ZW53WBaUDo6j/view?usp=sharing)
-    
+7. Download pre-trained weights for the convolutional layers and put to the directory `weights/`
+    * <a href="https://drive.google.com/file/d/14A3K2IPPPC8-BwPh-YjeHARaZqjnR655/view?usp=sharing">KAIST_dataset </a>
+    * <a href="https://drive.google.com/file/d/1Kyoyira0liRRr_FOY8DDSeATLQAwXtu-/view?usp=sharing">kaist_thermal_detector.weights</a> for test thermal video and images.
+    * <a href="https://drive.google.com/file/d/1xiSKTNEB5ng0T5kgyjUKytlpn3q84uK6/view?usp=sharing">kaist_visible_detector.weights</a> for pre-trained weight for KAIST dataset.
 
-8. Start training by using the command line: `darknet.exe detector train data/obj.data yolo-obj.cfg yolov4.conv.137`
+8. Start training by using the command line: `./darknet detector train data/kaist.data cfg/yolov3-kaist.cfg weights/kaist_thermal_detector.weights`
      
-   To train on Linux use command: `./darknet detector train data/obj.data yolo-obj.cfg yolov4.conv.137` (just use `./darknet` instead of `darknet.exe`)
+   To train on Windows use command: `darknet.exe detector train data/kaist.data cfg/yolov3-kaist.cfg weights/kaist_thermal_detector.weights` (just use `darknet.ext` instead of `./darknet`)
      
-   * (file `yolo-obj_last.weights` will be saved to the `build\darknet\x64\backup\` for each 100 iterations)
-   * (file `yolo-obj_xxxx.weights` will be saved to the `build\darknet\x64\backup\` for each 1000 iterations)
+   * (file `yolo-kaist_last.weights` will be saved to the `build\darknet\x64\backup\` for each 100 iterations)
+   * (file `yolo-kaist_xxxx.weights` will be saved to the `build\darknet\x64\backup\` for each 1000 iterations)
    * (to disable Loss-Window use `darknet.exe detector train data/obj.data yolo-obj.cfg yolov4.conv.137 -dont_show`, if you train on computer without monitor like a cloud Amazon EC2)
    * (to see the mAP & Loss-chart during training on remote server without GUI, use command `darknet.exe detector train data/obj.data yolo-obj.cfg yolov4.conv.137 -dont_show -mjpeg_port 8090 -map` then open URL `http://ip-address:8090` in Chrome/Firefox browser)
 
